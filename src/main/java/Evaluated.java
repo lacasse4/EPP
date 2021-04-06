@@ -3,24 +3,30 @@ package main.java;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Evaluated extends Student {
-	
-	private List<Evaluator> studentsEvaluator = new ArrayList<Evaluator>();
+public class Evaluated extends ArrayList<Evaluator> {
+
+	private String firstName;
+	private String lastName;
 
 	public Evaluated(String firstName, String lastName) {
-		super(firstName, lastName);
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
-	
-	public void addEvaluator(Evaluator e) {
-		studentsEvaluator.add(e);
-	}
-	
+
 	public double getNote() {
 		double total = 0.0;
-		for (Evaluator e : studentsEvaluator) {
+		for (Evaluator e : this) {
 			double note = e.getEvaluatorScore();
 			total += note;
 		}
 		return total;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
 	}
 }

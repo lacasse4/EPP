@@ -3,6 +3,7 @@ package main.java;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,10 +23,11 @@ public class ExcelFileWriter {
 	public static boolean write(String XLSXFileName, EPP epp) {
 		Row row;
 		Cell cell;
-		
-		List<Object[]> outputXLSX = epp.getResults();
+
+		List<Object[]> outputXLSX = new ArrayList<Object[]>();
 		outputXLSX.add(0, epp.getHeader());
-		
+		outputXLSX.addAll(epp.getResults());
+
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("Sommaire de l'EPP");
 

@@ -8,16 +8,14 @@ import java.util.List;
  * @author Vincent Lacasse
  * Call addTeam() to add teams one by one. Then, call evaluate() to get EPP results.
  */
-public class EPP {
+public class EPP extends ArrayList<Team> {
 
-	private List<Team> teams;
 	private List<Object[]> results;
 	private boolean[] grouping;
 	private boolean resultsComputed;
 
 
 	public EPP() { 
-		teams = new ArrayList<Team>();
 		results = new ArrayList<Object[]>();
 		resultsComputed = false;
 	}
@@ -26,12 +24,12 @@ public class EPP {
 	 * Adds a team to the EPP structure
 	 * @param team - Team to be added to this EPP
 	 */
-	public void addTeam(Team team) { 
+	public boolean add(Team team) {
 		if (!resultsComputed) {
-			teams.add(team); 
+			return super.add(team);
 		}
 		else {
-			throw new UnsupportedOperationException("Can not add a Team after EPP results are computed.");
+			throw new UnsupportedOperationException("Can not add a Team after EPP results were computed.");
 		}
 	}
 
@@ -70,7 +68,7 @@ public class EPP {
 	 * Computes EPP results (including Facteur) and grouping
 	 */
 	private void computeResults() {
-		for (Team t : teams) {
+		for (Team t : this) {
 			results.addAll(t.getTeamResults());
 		}	
 		createGrouping();

@@ -104,7 +104,7 @@ public class EPPBuilder {
 			if (!v[GROUPE].equals(csvData.get(line)[GROUPE])) {
 				v[GROUPE] = csvData.get(line)[GROUPE];
 				team = new Team(v[GROUPE]);
-				epp.addTeam(team);
+				epp.add(team);
 			}
 			
 			// detect student evaluated changes
@@ -112,7 +112,7 @@ public class EPPBuilder {
 				v[NOM] = csvData.get(line)[NOM];
 				v[PRENOM] = csvData.get(line)[PRENOM];
 				studentEvaluated = new Evaluated(v[NOM], v[PRENOM]);
-				team.addEvaluated(studentEvaluated);
+				team.add(studentEvaluated);
 			}
 			
 			// detect student evaluator changes
@@ -120,11 +120,11 @@ public class EPPBuilder {
 				v[NOM_EV] = csvData.get(line)[NOM_EV];
 				v[PRENOM_EV] = csvData.get(line)[PRENOM_EV];
 				studentEvaluator = new Evaluator(v[NOM_EV], v[PRENOM_EV]);
-				studentEvaluated.addEvaluator(studentEvaluator);
+				studentEvaluated.add(studentEvaluator);
 			}
 			
 //			studentEvaluator.addScore(Double.parseDouble(inputCSV.get(line)[NOTE_ASPECT]));
-			studentEvaluator.addScore(Double.parseDouble(csvData.get(line)[NOTE_ASPECT]) - 1.0);
+			studentEvaluator.add(Double.parseDouble(csvData.get(line)[NOTE_ASPECT]) - 1.0);
 		}
 		
 		return epp;
