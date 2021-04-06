@@ -95,36 +95,36 @@ public class EPPBuilder {
 		Evaluated studentEvaluated = null;
 		Evaluator studentEvaluator = null;
 		
-		String[] v = new String[NB_FIELDS];
-		Arrays.fill(v, "");
+		String[] last = new String[NB_FIELDS];
+		Arrays.fill(last, "");
 		
-		for (int line = 0; line < csvData.size(); line++) {
+		for (String[] line : csvData) {
 			
 			// detect team changes
-			if (!v[GROUPE].equals(csvData.get(line)[GROUPE])) {
-				v[GROUPE] = csvData.get(line)[GROUPE];
-				team = new Team(v[GROUPE]);
+			if (!last[GROUPE].equals(line[GROUPE])) {
+				last[GROUPE] = line[GROUPE];
+				team = new Team(line[GROUPE]);
 				epp.add(team);
 			}
 			
 			// detect student evaluated changes
-			if (!v[NOM].equals(csvData.get(line)[NOM]) || !v[PRENOM].equals(csvData.get(line)[PRENOM])) {
-				v[NOM] = csvData.get(line)[NOM];
-				v[PRENOM] = csvData.get(line)[PRENOM];
-				studentEvaluated = new Evaluated(v[NOM], v[PRENOM]);
+			if (!last[NOM].equals(line[NOM]) || !last[PRENOM].equals(line[PRENOM])) {
+				last[NOM] = line[NOM];
+				last[PRENOM] = line[PRENOM];
+				studentEvaluated = new Evaluated(line[NOM], line[PRENOM]);
 				team.add(studentEvaluated);
 			}
 			
 			// detect student evaluator changes
-			if (!v[NOM_EV].equals(csvData.get(line)[NOM_EV]) || !v[PRENOM_EV].equals(csvData.get(line)[PRENOM_EV])) {
-				v[NOM_EV] = csvData.get(line)[NOM_EV];
-				v[PRENOM_EV] = csvData.get(line)[PRENOM_EV];
-				studentEvaluator = new Evaluator(v[NOM_EV], v[PRENOM_EV]);
+			if (!last[NOM_EV].equals(line[NOM_EV]) || !last[PRENOM_EV].equals(line[PRENOM_EV])) {
+				last[NOM_EV] = line[NOM_EV];
+				last[PRENOM_EV] = line[PRENOM_EV];
+				studentEvaluator = new Evaluator(line[NOM_EV], line[PRENOM_EV]);
 				studentEvaluated.add(studentEvaluator);
 			}
 			
-//			studentEvaluator.addScore(Double.parseDouble(inputCSV.get(line)[NOTE_ASPECT]));
-			studentEvaluator.add(Double.parseDouble(csvData.get(line)[NOTE_ASPECT]) - 1.0);
+//			studentEvaluator.addScore(Double.parseDouble(line[NOTE_ASPECT]));
+			studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]) - 1.0);
 		}
 		
 		return epp;
