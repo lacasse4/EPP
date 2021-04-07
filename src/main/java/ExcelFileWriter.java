@@ -3,14 +3,8 @@ package main.java;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
@@ -24,38 +18,50 @@ public class ExcelFileWriter {
 		Row row;
 		Cell cell;
 
-		List<Object[]> outputXLSX = new ArrayList<Object[]>();
-		outputXLSX.add(0, epp.getHeader());
-		outputXLSX.addAll(epp.getResults());
-
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet sheet = workbook.createSheet("Sommaire de l'EPP");
-
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Sommaire de l'EPP");
 		DataFormat format = workbook.createDataFormat();
 		CellStyle style = workbook.createCellStyle();
 		style.setDataFormat(format.getFormat("0.00"));
-				
-		int rowCount = 0;
 
-		for (Object[] s : outputXLSX) {
-			row = sheet.createRow(rowCount++);
-
-			for (int i = 0; i < s.length; i++) {
-				cell = row.createCell(i);
-				if (s[i] instanceof Double) {
-					cell.setCellValue((Double)s[i]);
-					cell.setCellStyle(style);
-				}
-				else if (s[i] instanceof Integer) {
-					cell.setCellValue((Integer)s[i]);
-				}
-				else if (s[i] instanceof String) {
-					cell.setCellValue((String)s[i]);           		
-				}
-				else throw new IllegalArgumentException("Array items must be String, Double or Integer.");
-			}   
+		String[] header = epp.getHeader();
+		row = sheet.createRow(0);
+		for (int i = 0; i < header.length; i++) {
+			cell = row.createCell(i);
+			cell.setCellValue(header[i]);
 		}
-		
+
+
+		int rowCount = 1;
+		for (Team team : epp) {
+			for (Evaluated e : team) {
+				row = sheet.createRow(rowCount);
+
+				cell = row.createCell(Team.GROUPE);
+				cell.setCellValue(team.getName());
+
+				cell = row.createCell(Team.NOM);
+				cell.setCellValue(e.getLastName());
+
+				cell = row.createCell(Team.PRENOM);
+				cell.setCellValue(e.getFirstName());
+
+				cell = row.createCell(Team.NOTE_EPP);
+				cell.setCellValue(e.getNote());
+				cell.setCellStyle(style);
+
+				cell = row.createCell(Team.MNG);
+				cell.setCellValue(team.getMean());
+				cell.setCellStyle(style);
+
+				cell = row.createCell(Team.FACTEUR);
+				cell.setCellValue(e.getFactor());
+				cell.setCellStyle(style);
+
+				rowCount ++;
+			}
+		}
+
 		try {
 			FileOutputStream outputStream = new FileOutputStream(XLSXFileName);
 			workbook.write(outputStream);

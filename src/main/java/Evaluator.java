@@ -6,10 +6,15 @@ public class Evaluator extends ArrayList<Double> {
 
 	private String firstName;
 	private String lastName;
+	private double evaluatorScore;
 
 	public Evaluator(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
+	}
+
+	public double getScore() {
+		return evaluatorScore;
 	}
 
 	public String getFirstName() {
@@ -20,11 +25,11 @@ public class Evaluator extends ArrayList<Double> {
 		return lastName;
 	}
 
-	public double getEvaluatorScore() {
+	public void compute() {
 		double total = 0.0;
 		for (Double noteAspect : this) {
-			total += noteAspect; 
+			total += noteAspect;
 		}
-		return total;
+		evaluatorScore = total;
 	}
 }

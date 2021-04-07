@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -84,6 +83,9 @@ public class MainView extends JFrame {
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Command class to read the EPP file (Export des evaluation, sans multiligne)
+	 */
 	private class ReadAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -108,6 +110,11 @@ public class MainView extends JFrame {
 				// populate the JTable
 				epp = EPPBuilder.build(CSVFileName);
 				if (epp == null) return;
+
+				// perform eep calculations
+				epp.compute();
+
+				// transform epp information to be displayed in a JTable
 				table.setModel(createTableModel());
 
 				// Show grouping in white and gray in the JTable
@@ -121,14 +128,15 @@ public class MainView extends JFrame {
 
 		private TableModel createTableModel() {
 			Object[] header = epp.getHeader();
-			List<Object[]> dataList = epp.getResults();
-			Object[][] dataArray = new Object[dataList.size()][];
-			dataList.toArray(dataArray);
-			return new DefaultTableModel(dataArray, header);
+			Object[][] tableData = epp.getTableData();
+			return new DefaultTableModel(tableData, header);
 		}		
 	}
 
 
+	/**
+	 * Command class to write the EPP information to a XLSX file
+	 */
 	private class WriteAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -165,6 +173,9 @@ public class MainView extends JFrame {
 		}
 	}
 
+	/**
+	 * CellRenderer modifies the way information appears in the JTable
+	 */
 	private class CelRenderer extends JLabel implements TableCellRenderer {
 		private static final long serialVersionUID = 1L;
 		private boolean[] grouping;

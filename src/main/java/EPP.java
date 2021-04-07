@@ -6,93 +6,78 @@ import java.util.List;
 /**
  * EPP class. Contains a list of Team 
  * @author Vincent Lacasse
- * Call addTeam() to add teams one by one. Then, call evaluate() to get EPP results.
+ * Usage: add() teams one by one. Then get an iterator to get results.
  */
 public class EPP extends ArrayList<Team> {
 
-	private List<Object[]> results;
 	private boolean[] grouping;
-	private boolean resultsComputed;
+	private int nEvaluated = 0;
 
-
-	public EPP() { 
-		results = new ArrayList<Object[]>();
-		resultsComputed = false;
+	public EPP() {
 	}
 
 	/**
-	 * Adds a team to the EPP structure
-	 * @param team - Team to be added to this EPP
+	 * Computes means, notes and factors for all Students
 	 */
-	public boolean add(Team team) {
-		if (!resultsComputed) {
-			return super.add(team);
+	public void compute() {
+		for (Team t : this) {
+			nEvaluated += t.compute();
 		}
-		else {
-			throw new UnsupportedOperationException("Can not add a Team after EPP results were computed.");
-		}
+		createGrouping();
 	}
 
-	
-	/*
-	 * Getters
+	/**
+	 * Returns a header to be displayed prior to EPP data
+ 	 * @return the header
 	 */
-	
 	public String[] getHeader() {
 		return Team.HEADER;
 	}
 
-	public List<Object[]> getResults() {
-		enforceComputing();
-		return results;
-	}
-
+	/**
+	 * Returns team groupings in an array of boolean
+	 * @return an array of boolean
+	 */
 	public boolean[] getGrouping() {
-		enforceComputing();
 		return grouping;
 	}
-	
 
 	/**
-	 * Enforces that results and groupings are computed
+	 * returns EPP data in a format suitable for a TableModel
+ 	 * @return EPP data in 2D array format
 	 */
-	private void enforceComputing() {
-		if (!resultsComputed) {
-			computeResults();
-			resultsComputed = true;
-		}
-	}
-
-	
-	/**
-	 * Computes EPP results (including Facteur) and grouping
-	 */
-	private void computeResults() {
+	public Object[][] getTableData() {
+		List<Object[]> list = new ArrayList<Object[]>();
 		for (Team t : this) {
-			results.addAll(t.getTeamResults());
-		}	
-		createGrouping();
-		
-	}
+			for (Evaluated e : t) {
+				Object[] line = new Object[Team.NB_FIELDS];
+				list.add(line);
 
+				line[Team.GROUPE] = t.getName();
+				line[Team.NOM] = e.getLastName();
+				line[Team.PRENOM] = e.getFirstName();
+				line[Team.NOTE_EPP] = e.getNote();
+				line[Team.MNG] = t.getMean();
+				line[Team.FACTEUR] = e.getFactor();
+			}
+		}
+		return list.toArray(new Object[0][0]);
+	}
 
 	/**
 	 * Creates Team groupings.
-	 * Must be called after the results have been computed
+	 * Must be called after results have been computed
 	 */
 	private void createGrouping() {
-		grouping = new boolean[results.size()];
-		boolean state = false;
-		String currentGroup = "";
-		int compteur = 0;
+		grouping = new boolean[nEvaluated];
+		boolean state = true;
+		int student = 0;
 
-		for (Object[] x : results) {
-			String group = (String)x[Team.GROUPE];
-			if (!currentGroup.equals(group)) {
-				state = !state;
-				currentGroup = group;
+		for (Team team : this) {
+			for (Evaluated e : team) {
+				grouping[student++] = state;
 			}
-			grouping[compteur++] = state;
+			state = !state;
 		}
 	}
 }
