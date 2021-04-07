@@ -16,11 +16,11 @@ public class Team extends ArrayList<Evaluated> {
 	public static final int NOTE_EPP = 3;
 	public static final int MNG = 4;
 	public static final int FACTEUR = 5;
-//	public static final int NOTE_EQUIPE = 6;
-//	public static final int NOTE_ETUDIANT = 7;
+	public static final int NOTE_EQUIPE = 6;
+	public static final int NOTE_ETUDIANT = 7;
 	public static final String[] HEADER =
-			{"Groupe", "Nom", "Prenom", "Note_EPP", "MNG", "Facteur"};
-//			{"Groupe", "Nom", "Prenom", "Note_EPP", "MNG", "Facteur", "Note_equipe", "Note_etudiant"};
+//			{"Groupe", "Nom", "Prenom", "Note_EPP", "MNG", "Facteur"};
+			{"Groupe", "Nom", "Prenom", "Note_EPP", "MNG", "Facteur", "Note_equipe", "Note_etudiant"};
 
 	private String name;
 	private double mean;

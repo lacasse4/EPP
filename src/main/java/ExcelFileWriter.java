@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
@@ -17,6 +18,7 @@ public class ExcelFileWriter {
 	public static boolean write(String XLSXFileName, EPP epp) {
 		Row row;
 		Cell cell;
+		CellRangeAddress cra;
 
 		Workbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet("Sommaire de l'EPP");
@@ -31,9 +33,16 @@ public class ExcelFileWriter {
 			cell.setCellValue(header[i]);
 		}
 
-
 		int rowCount = 1;
 		for (Team team : epp) {
+
+			int firstRow = rowCount;
+			int lastRow = rowCount + team.size() - 1;
+			int firstCol = Team.NOTE_EQUIPE;
+			int lastCol = Team.NOTE_EQUIPE;
+			cra = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
+			sheet.addMergedRegion(cra);
+
 			for (Evaluated e : team) {
 				row = sheet.createRow(rowCount);
 
@@ -58,6 +67,10 @@ public class ExcelFileWriter {
 				cell.setCellValue(e.getFactor());
 				cell.setCellStyle(style);
 
+				cell = row.createCell(Team.NOTE_ETUDIANT);
+				cell.setCellFormula(getFormula(firstRow, rowCount));
+				cell.setCellStyle(style);
+
 				rowCount ++;
 			}
 		}
@@ -74,5 +87,9 @@ public class ExcelFileWriter {
 			return false;
 		}
 		return true;
+	}
+
+	private static String getFormula(int firstRow, int rowCount) {
+		return "F" + (rowCount+1) + "*G" + (firstRow+1);
 	}
 }
