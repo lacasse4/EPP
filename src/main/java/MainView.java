@@ -24,14 +24,18 @@ import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 
+/**
+ * MainView class. Main view and launcher of the EPP application
+ * @author Vincent Lacasse
+ */
 public class MainView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTable table;
-	private JButton btnRead;
-	private JButton btnWrite;
-	private JButton btnExit;
+	final private JPanel contentPane;
+	final private JTable table;
+	final private JButton btnRead;
+	final private JButton btnWrite;
+	final private JButton btnExit;
 	JFileChooser fileChooser = new JFileChooser();
 
 	private EPP epp;

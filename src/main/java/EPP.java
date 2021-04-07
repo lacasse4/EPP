@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * EPP class. Contains a list of Team 
  * @author Vincent Lacasse
- * Usage: add() teams one by one. Then get an iterator to get results.
+ * Usage: add() teams one by one. Then call compute() prior to get any results.
  */
 public class EPP extends ArrayList<Team> {
 

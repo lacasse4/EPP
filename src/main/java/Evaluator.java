@@ -2,6 +2,10 @@ package main.java;
 
 import java.util.ArrayList;
 
+/**
+ * Evaluator for EPP
+ * @author Vincent Lacasse
+ */
 public class Evaluator extends ArrayList<Double> {
 
 	private String firstName;

@@ -16,7 +16,6 @@ import com.opencsv.exceptions.CsvException;
  * Utility class that reads a CSV file (Export des evaluation, sans multiligne)
  * and builds an EPP structure
  * @author Vincent Lacasse
- *
  */
 public class EPPBuilder {
 	
@@ -122,8 +121,9 @@ public class EPPBuilder {
 				studentEvaluator = new Evaluator(line[NOM_EV], line[PRENOM_EV]);
 				studentEvaluated.add(studentEvaluator);
 			}
-			
+
 //			studentEvaluator.addScore(Double.parseDouble(line[NOTE_ASPECT]));
+			// subtract 1 to note_aspect to have Module Atelier match EPP results
 			studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]) - 1.0);
 		}
 		

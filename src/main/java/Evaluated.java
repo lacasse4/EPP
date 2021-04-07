@@ -2,6 +2,10 @@ package main.java;
 
 import java.util.ArrayList;
 
+/**
+ * Student evaluated for EPP
+ * @author Vincent Lacasse
+ */
 public class Evaluated extends ArrayList<Evaluator> {
 
 	private String firstName;

@@ -3,9 +3,8 @@ package main.java;
 import java.util.ArrayList;
 
 /**
- * team of students for EPP
+ * Team of students for EPP
  * @author Vincent Lacasse
- *
  */
 public class Team extends ArrayList<Evaluated> {
 

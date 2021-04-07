@@ -11,7 +11,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 /**
  * Utility class to write an EPP to a XLSX file
  * @author Vincent Lacasse
- * Only String, Double and Integer objects are supported
  */
 public class ExcelFileWriter {
 	
