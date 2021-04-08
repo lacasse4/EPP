@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -12,7 +13,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
-import com.opencsv.validators.LineValidator;
+import com.opencsv.validators.RowValidator;
 
 import javax.swing.*;
 
@@ -23,7 +24,6 @@ import javax.swing.*;
  */
 public class EPPBuilder {
 	
-	// input fields
 	public static final int NB_FIELDS = 12;
 	public static final int GROUPE = 0;
 	public static final int NOM = 1; 
@@ -38,7 +38,6 @@ public class EPPBuilder {
 	public static final int PRENOM_EV = 10;
 	public static final int COMMENTAIRES_GENERAUX = 11;
 
-	
 	/**
 	 * reads and buids a EPP from a CSV file (Export des evaluations, sans multiligne)
 	 * @param CSVFileName - the File pointing to the input CSV file
@@ -63,27 +62,24 @@ public class EPPBuilder {
 		CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build(); 
 
 		try {
-			LineValidator lv = new Validator();
+			RowValidator rv = new Validator();
 			CSVReader reader = new CSVReaderBuilder(
 					new FileReader(CSVFileName))
 					.withCSVParser(csvParser)   
 					.withSkipLines(1)           // skip the first line, header info
-					.withLineValidator(lv)
+					.withRowValidator(rv)
 					.build();
 			csvData = reader.readAll();
 			reader.close();
 
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null, "Le fichier " + CSVFileName + " n'a pas été trouvé.", "Erreur", JOptionPane.ERROR_MESSAGE);
-//			System.err.println("File :" + CSVFileName + "not found");
 			csvData = null;
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "Erreur lors de la du fichier" + CSVFileName, "Erreur", JOptionPane.ERROR_MESSAGE);
-//			System.err.println("Error reading file " + CSVFileName +", Probably not a CSV file with ';' separators.");
 			csvData = null;
 		} catch (CsvException e) {
 			JOptionPane.showMessageDialog(null, "Erreur à la ligne " + e.getLineNumber() + " du fichier " + CSVFileName + "\nLigne lu: " + e.getLine(), "Erreur", JOptionPane.ERROR_MESSAGE);
-//			System.err.println("CSV format error in file " + CSVFileName);
 			csvData = null;
 		}
 		
@@ -139,25 +135,60 @@ public class EPPBuilder {
 		return epp;
 	}
 
-	private static class Validator implements LineValidator {
+//	private static class Validator implements LineValidator {
+//
+//		@Override
+//		public boolean isValid(String line) {
+//			if (line == null) return true;
+//
+//			int semicolonCount = 0;
+//			for (int i = 0; i < line.length(); i++) {
+//				if (line.charAt(i) == ';') {
+//					semicolonCount++;
+//				}
+//			}
+//			return semicolonCount >= 10;
+//		}
+//
+//		@Override
+//		public void validate(String line) throws CsvValidationException {
+//			if (!isValid(line)) {
+//				throw new CsvValidationException("Validator Exception");
+//			}
+//		}
+//	}
 
-		@Override
-		public boolean isValid(String line) {
-			if (line == null) return true;
+	private static class Validator implements RowValidator {
 
-			int semicolonCount = 0;
-			for (int i = 0; i < line.length(); i++) {
-				if (line.charAt(i) == ';') {
-					semicolonCount++;
-				}
+		// from https://www.baeldung.com/java-check-string-number
+		final private Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+
+		public boolean isNumeric(String strNum) {
+			if (strNum == null) {
+				return false;
 			}
-			return semicolonCount >= 10;
+			return pattern.matcher(strNum).matches();
 		}
 
 		@Override
-		public void validate(String line) throws CsvValidationException {
-			if (!isValid(line)) {
-				throw new CsvValidationException("Validator Exception");
+		public boolean isValid(String[] row) {
+			return row.length == NB_FIELDS &&
+			row[GROUPE].length() != 0 &&
+			row[NOM].length() !=0 &&
+			row[PRENOM].length() != 0 &&
+			row[BAREME].length() !=0 &&
+			isNumeric(row[NOTE_ASPECT]) &&
+			isNumeric(row[NOTE]) &&
+			isNumeric(row[MNG]) &&
+			isNumeric(row[FACTEUR]) &&
+			row[NOM_EV].length() != 0 &&
+			row[PRENOM_EV].length() != 0;
+		}
+
+		@Override
+		public void validate(String[] row) throws CsvValidationException {
+			if (!isValid(row)) {
+				throw new CsvValidationException("Row Validator Exception");
 			}
 		}
 	}

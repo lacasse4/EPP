@@ -122,6 +122,7 @@ public class MainView extends JFrame {
 	 */
 	private class ReadAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
+		FileFilter filter = null;
 
 		public ReadAction() {
 			super("Lire CSV");
@@ -131,9 +132,11 @@ public class MainView extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			int option;
 
-			FileFilter filter = new FileNameExtensionFilter("Fichier CSV", "csv");
+			if (filter == null) {
+				filter = new FileNameExtensionFilter("Fichier CSV", "csv");
+				fileChooser.setFileFilter(filter);
+			}
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fileChooser.setFileFilter(filter);
 			fileChooser.setSelectedFile(null);
 
 			option = fileChooser.showOpenDialog(MainView.this);
@@ -173,6 +176,7 @@ public class MainView extends JFrame {
 	 */
 	private class WriteAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
+		FileFilter filter = null;
 
 		public WriteAction() {
 			super("Écrire XLSX");
@@ -186,8 +190,10 @@ public class MainView extends JFrame {
 			File oldFile = fileChooser.getSelectedFile();
 			fileChooser.setSelectedFile(changeExtension(oldFile, "xlsx"));
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			FileFilter filter = new FileNameExtensionFilter("Fichier XLSX", "xlsx");
-			fileChooser.setFileFilter(filter);
+			if (filter == null) {
+				FileFilter filter = new FileNameExtensionFilter("Fichier XLSX", "xlsx");
+				fileChooser.setFileFilter(filter);
+			}
 
 			option = fileChooser.showSaveDialog(MainView.this);
 
@@ -207,6 +213,9 @@ public class MainView extends JFrame {
 		}
 	}
 
+	/**
+	 * Command class to exit the application
+	 */
 	private class ExitAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -220,6 +229,9 @@ public class MainView extends JFrame {
 		}
 	}
 
+	/**
+	 * Command class to show the About dialog
+	 */
 	private class AboutAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -233,10 +245,10 @@ public class MainView extends JFrame {
 		}
 	}
 
-
-
 	/**
-	 * CellRenderer modifies the way information appears in the JTable
+	 * CellRenderer class to modify the way information appears in the JTable
+	 * - floating number rounding
+	 * - team grouping
 	 */
 	private class CelRenderer extends JLabel implements TableCellRenderer {
 		private static final long serialVersionUID = 1L;
@@ -251,12 +263,13 @@ public class MainView extends JFrame {
 
 			if (value instanceof Double) {
 				setHorizontalAlignment(SwingConstants.TRAILING);
-				setText(String.format("%.2f", (Double)value));
+				setText(String.format("%.2f", value));
 			}
 			else {
 				setHorizontalAlignment(SwingConstants.LEADING);
 				setText((String)value);
 			}
+
 			if (grouping[row]) {
 				setBackground(Color.GRAY);
 				setForeground(table.getSelectionForeground());
