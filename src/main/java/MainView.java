@@ -7,22 +7,13 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
 
 /**
  * MainView class. Main view and launcher of the EPP application
@@ -31,12 +22,12 @@ import javax.swing.SwingConstants;
 public class MainView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	final private JPanel contentPane;
-	final private JTable table;
-	final private JButton btnRead;
-	final private JButton btnWrite;
-	final private JButton btnExit;
-	JFileChooser fileChooser = new JFileChooser();
+	private JTable table;
+	private Action readAction;
+	private Action writeAction;
+	private Action exitAction;
+	private Action aboutAction;
+	private JFileChooser fileChooser = new JFileChooser();
 
 	private EPP epp;
 
@@ -61,26 +52,65 @@ public class MainView extends JFrame {
 	 */
 	public MainView() {
 		super("Évaluation par les pairs");
+
+		final JPanel contentPane;
+		final JButton btnRead;
+		final JButton btnWrite;
+		final JButton btnExit;
+		final JMenuBar menuBar;
+		final JMenu mnFile;
+		final JMenu mnHelp;
+		final JMenuItem miRead;
+		final JMenuItem miWrite;
+		final JMenuItem miExit;
+		final JMenuItem miAbout;
+
+		// Set frame and main panel
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1000, 500);
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+//		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
+		// Set button panel
 		JPanel buttonPanel = new JPanel();
 		contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-		btnRead = new JButton(new ReadAction());
+		// create actions
+		readAction = new ReadAction();
+		writeAction = new WriteAction();
+		exitAction = new ExitAction();
+		aboutAction = new AboutAction();
+
+		// create button and link to actions
+		btnRead = new JButton(readAction);
+		btnWrite = new JButton(writeAction);
+		btnExit = new JButton(exitAction);
+
+		// add buttons to button panels
 		buttonPanel.add(btnRead);
-
-		btnWrite = new JButton(new WriteAction());
 		buttonPanel.add(btnWrite);
-
-		btnExit = new JButton("Sortir");
-		btnExit.addActionListener(l->System.exit(0));
 		buttonPanel.add(btnExit);
 
+		// setup menu and link to actions
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		mnFile = new JMenu("Fichier");
+		mnHelp = new JMenu("Aide");
+		miRead = new JMenuItem(readAction);
+		miWrite = new JMenuItem(writeAction);
+		miExit = new JMenuItem(exitAction);
+		miAbout = new JMenuItem(aboutAction);
+		menuBar.add(mnFile);
+		menuBar.add(mnHelp);
+		mnFile.add(miRead);
+		mnFile.add(miWrite);
+		mnFile.addSeparator();
+		mnFile.add(miExit);
+		mnHelp.add(miAbout);
+
+		// set table
 		table = new JTable();
 		table.setGridColor(Color.BLACK);
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -125,8 +155,8 @@ public class MainView extends JFrame {
 				CelRenderer cr = new CelRenderer(epp.getGrouping());
 				table.setDefaultRenderer(Object.class, cr);
 
-				// Enable the Write button
-				btnWrite.getAction().setEnabled(true);
+				// Enable the Write action
+				writeAction.setEnabled(true);
 			}
 		}
 
@@ -176,6 +206,34 @@ public class MainView extends JFrame {
 			return new File(f.getParent(), name + "." + newExtension);
 		}
 	}
+
+	private class ExitAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		public ExitAction() {
+			super("Sortir");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.exit(0);
+		}
+	}
+
+	private class AboutAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		public AboutAction() {
+			super("A propos");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(MainView.this, "EPP version 1.0\nAuteur: Vincent Lacasse");
+		}
+	}
+
+
 
 	/**
 	 * CellRenderer modifies the way information appears in the JTable
