@@ -118,7 +118,7 @@ public class MainView extends JFrame {
 	}
 
 	/**
-	 * Command class to read the EPP file (Export des evaluation, sans multiligne)
+	 * Command class to read the EPP file (Export des evaluations, sans multiligne)
 	 */
 	private class ReadAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;

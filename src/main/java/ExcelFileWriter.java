@@ -8,6 +8,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.swing.*;
+
 /**
  * Utility class to write an EPP to a XLSX file
  * @author Vincent Lacasse
@@ -79,9 +81,10 @@ public class ExcelFileWriter {
 			workbook.write(outputStream);
 			workbook.close();
 		} catch (FileNotFoundException e) {
-			System.err.println("File " + XLSXFileName + " was not found.");
+			JOptionPane.showMessageDialog(null, "Le fichier " + XLSXFileName + " n'a pas été trouvé.", "Erreur", JOptionPane.ERROR_MESSAGE);
 			return false;
 		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Erreur à l'écriture du fichier " + XLSXFileName, "Erreur", JOptionPane.ERROR_MESSAGE);
 			System.err.println("Error writing to file " + XLSXFileName);
 			return false;
 		}

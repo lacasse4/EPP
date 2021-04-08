@@ -11,9 +11,13 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
+import com.opencsv.validators.LineValidator;
+
+import javax.swing.*;
 
 /**
- * Utility class that reads a CSV file (Export des evaluation, sans multiligne)
+ * Utility class that reads a CSV file (Export des evaluations, sans multiligne)
  * and builds an EPP structure
  * @author Vincent Lacasse
  */
@@ -36,7 +40,7 @@ public class EPPBuilder {
 
 	
 	/**
-	 * reads and buids a EPP from a CSV file (Export des evaluation, sans multiligne)
+	 * reads and buids a EPP from a CSV file (Export des evaluations, sans multiligne)
 	 * @param CSVFileName - the File pointing to the input CSV file
 	 * @return an EPP instance
 	 */	
@@ -48,7 +52,7 @@ public class EPPBuilder {
 
 	
 	/**
-	 * reads a CSV File (Export des evaluation, sans multiligne)
+	 * reads a CSV File (Export des evaluations, sans multiligne)
 	 * @param CSVFileName - the File pointing to the input CSV file
 	 * @return CSV info in a list of String[]. Each item of the list is a CSV line.
 	 */
@@ -59,22 +63,27 @@ public class EPPBuilder {
 		CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build(); 
 
 		try {
+			LineValidator lv = new Validator();
 			CSVReader reader = new CSVReaderBuilder(
 					new FileReader(CSVFileName))
 					.withCSVParser(csvParser)   
 					.withSkipLines(1)           // skip the first line, header info
+					.withLineValidator(lv)
 					.build();
 			csvData = reader.readAll();
 			reader.close();
 
 		} catch (FileNotFoundException e) {
-			System.err.println("File :" + CSVFileName + "not found");
+			JOptionPane.showMessageDialog(null, "Le fichier " + CSVFileName + " n'a pas été trouvé.", "Erreur", JOptionPane.ERROR_MESSAGE);
+//			System.err.println("File :" + CSVFileName + "not found");
 			csvData = null;
 		} catch (IOException e) {
-			System.err.println("Error reading file " + CSVFileName +", Probably not a CSV file with ';' separators.");
+			JOptionPane.showMessageDialog(null, "Erreur lors de la du fichier" + CSVFileName, "Erreur", JOptionPane.ERROR_MESSAGE);
+//			System.err.println("Error reading file " + CSVFileName +", Probably not a CSV file with ';' separators.");
 			csvData = null;
 		} catch (CsvException e) {
-			System.err.println("CSV format error in file " + CSVFileName);
+			JOptionPane.showMessageDialog(null, "Erreur à la ligne " + e.getLineNumber() + " du fichier " + CSVFileName + "\nLigne lu: " + e.getLine(), "Erreur", JOptionPane.ERROR_MESSAGE);
+//			System.err.println("CSV format error in file " + CSVFileName);
 			csvData = null;
 		}
 		
@@ -128,5 +137,28 @@ public class EPPBuilder {
 		}
 		
 		return epp;
+	}
+
+	private static class Validator implements LineValidator {
+
+		@Override
+		public boolean isValid(String line) {
+			if (line == null) return true;
+
+			int semicolonCount = 0;
+			for (int i = 0; i < line.length(); i++) {
+				if (line.charAt(i) == ';') {
+					semicolonCount++;
+				}
+			}
+			return semicolonCount >= 10;
+		}
+
+		@Override
+		public void validate(String line) throws CsvValidationException {
+			if (!isValid(line)) {
+				throw new CsvValidationException("Validator Exception");
+			}
+		}
 	}
 }
