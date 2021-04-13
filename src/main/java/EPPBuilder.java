@@ -43,10 +43,10 @@ public class EPPBuilder {
 	 * @param CSVFileName - the File pointing to the input CSV file
 	 * @return an EPP instance
 	 */	
-	public static EPP build(String CSVFileName) {
+	public static EPP build(String CSVFileName, boolean scaleType) {
 		List<String[]> csvData = readCSV(CSVFileName);
 		if (csvData == null) return null;
-		return buildEPP(csvData);
+		return buildEPP(csvData, scaleType);
 	}
 
 	
@@ -93,7 +93,7 @@ public class EPPBuilder {
 	 * @param csvData - content of the CSV file as read by a CSVReader
 	 * @return a populated EPP structure
 	 */
-	private static EPP buildEPP(List<String[]> csvData) {
+	private static EPP buildEPP(List<String[]> csvData, boolean scaleType) {
 		EPP epp = new EPP();
 		Team team = null;
 		Evaluated studentEvaluated = null;
@@ -127,9 +127,10 @@ public class EPPBuilder {
 				studentEvaluated.add(studentEvaluator);
 			}
 
-//			studentEvaluator.addScore(Double.parseDouble(line[NOTE_ASPECT]));
-			// subtract 1 to note_aspect to have Module Atelier match EPP results
-			studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]) - 1.0);
+			// subtract 1 from note_aspect to have Module Atelier match EPP results.
+			// do not subtract 1 for ELE400
+			int offset = scaleType ? 0 : 1;
+			studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]) - offset);
 		}
 		
 		return epp;

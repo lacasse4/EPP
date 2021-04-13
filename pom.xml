@@ -6,7 +6,7 @@
 
     <groupId>ca.etsmtl.epp</groupId>
     <artifactId>EPP</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <name>EPP</name>
     <description>Evaluation par les pairs</description>
 
@@ -65,7 +65,7 @@
                         <executable>java</executable>
                         <arguments>
                             <argument>-jar</argument>
-                            <argument>target/EPP-1.0-jar-with-dependencies.jar</argument>
+                            <argument>target/EPP-1.1-jar-with-dependencies.jar</argument>
                         </arguments>
                     </configuration>
                     <executions>

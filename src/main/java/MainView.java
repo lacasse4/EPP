@@ -23,6 +23,7 @@ public class MainView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTable table;
+	private JCheckBox cbScale;
 	private Action readAction;
 	private Action writeAction;
 	private Action exitAction;
@@ -84,11 +85,13 @@ public class MainView extends JFrame {
 		aboutAction = new AboutAction();
 
 		// create button and link to actions
+		cbScale = new JCheckBox("Barème ELE400 (valeur min = 1)");
 		btnRead = new JButton(readAction);
 		btnWrite = new JButton(writeAction);
 		btnExit = new JButton(exitAction);
 
 		// add buttons to button panels
+		buttonPanel.add(cbScale);
 		buttonPanel.add(btnRead);
 		buttonPanel.add(btnWrite);
 		buttonPanel.add(btnExit);
@@ -115,6 +118,14 @@ public class MainView extends JFrame {
 		table.setGridColor(Color.BLACK);
 		JScrollPane scrollPane = new JScrollPane(table);
 		contentPane.add(scrollPane, BorderLayout.CENTER);
+	}
+
+	/**
+	 * Returns the scale type required
+	 * @return true -> the scale starts at 1. false -> the scale starts at 0.
+	 */
+	public boolean getScale() {
+		return cbScale.getModel().isSelected();
 	}
 
 	/**
@@ -145,7 +156,7 @@ public class MainView extends JFrame {
 				String CSVFileName = fileChooser.getSelectedFile().getPath();
 
 				// populate the JTable
-				epp = EPPBuilder.build(CSVFileName);
+				epp = EPPBuilder.build(CSVFileName, getScale());
 				if (epp == null) return;
 
 				// perform eep calculations
@@ -160,6 +171,7 @@ public class MainView extends JFrame {
 
 				// Enable the Write action
 				writeAction.setEnabled(true);
+				cbScale.setEnabled(false)	;
 			}
 		}
 
@@ -241,7 +253,7 @@ public class MainView extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(MainView.this, "EPP version 1.0\nAuteur: Vincent Lacasse");
+			JOptionPane.showMessageDialog(MainView.this, "EPP version 1.1\nAuteur: Vincent Lacasse");
 		}
 	}
 
