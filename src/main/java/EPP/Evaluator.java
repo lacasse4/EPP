@@ -1,4 +1,4 @@
-package main.java;
+package main.java.EPP;
 
 import java.util.ArrayList;
 
@@ -29,10 +29,11 @@ public class Evaluator extends ArrayList<Double> {
 		return lastName;
 	}
 
-	public void compute() {
+	public void compute(boolean minScaleIs1, int maxScale, boolean normalize) {
 		double total = 0.0;
+		double offset = minScaleIs1 ? 0.0 : 1.0;
 		for (Double noteAspect : this) {
-			total += noteAspect;
+			total += noteAspect - offset;
 		}
 		evaluatorScore = total;
 	}

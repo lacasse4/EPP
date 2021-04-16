@@ -1,4 +1,4 @@
-package main.java;
+package main.java.IO;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,6 +14,10 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.opencsv.validators.RowValidator;
+import main.java.EPP.EPP;
+import main.java.EPP.Evaluated;
+import main.java.EPP.Evaluator;
+import main.java.EPP.Team;
 
 import javax.swing.*;
 
@@ -22,7 +26,7 @@ import javax.swing.*;
  * and builds an EPP structure
  * @author Vincent Lacasse
  */
-public class EPPBuilder {
+public class EPPReader {
 	
 	public static final int NB_FIELDS = 12;
 	public static final int GROUPE = 0;
@@ -39,14 +43,14 @@ public class EPPBuilder {
 	public static final int COMMENTAIRES_GENERAUX = 11;
 
 	/**
-	 * reads and buids a EPP from a CSV file (Export des evaluations, sans multiligne)
+	 * reads a CSV file (Export des evaluations, sans multiligne) and create an EPP structure
 	 * @param CSVFileName - the File pointing to the input CSV file
-	 * @return an EPP instance
+	 * @return an EPP instance, no computation performed
 	 */	
-	public static EPP build(String CSVFileName, boolean scaleType) {
+	public static EPP read(String CSVFileName) {
 		List<String[]> csvData = readCSV(CSVFileName);
 		if (csvData == null) return null;
-		return buildEPP(csvData, scaleType);
+		return parseCSV(csvData);
 	}
 
 	
@@ -89,11 +93,11 @@ public class EPPBuilder {
 	
 	/**
 	 * Populates an EPP structure from a csvData structure.
-	 * Performs EPP calculations to obtain "Facteur".
+	 * Computation are not performed
 	 * @param csvData - content of the CSV file as read by a CSVReader
 	 * @return a populated EPP structure
 	 */
-	private static EPP buildEPP(List<String[]> csvData, boolean scaleType) {
+	private static EPP parseCSV(List<String[]> csvData) {
 		EPP epp = new EPP();
 		Team team = null;
 		Evaluated studentEvaluated = null;
@@ -127,38 +131,16 @@ public class EPPBuilder {
 				studentEvaluated.add(studentEvaluator);
 			}
 
-			// subtract 1 from note_aspect to have Module Atelier match EPP results.
-			// do not subtract 1 for ELE400
-			int offset = scaleType ? 0 : 1;
-			studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]) - offset);
+			studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]));
 		}
 		
 		return epp;
 	}
 
-//	private static class Validator implements LineValidator {
-//
-//		@Override
-//		public boolean isValid(String line) {
-//			if (line == null) return true;
-//
-//			int semicolonCount = 0;
-//			for (int i = 0; i < line.length(); i++) {
-//				if (line.charAt(i) == ';') {
-//					semicolonCount++;
-//				}
-//			}
-//			return semicolonCount >= 10;
-//		}
-//
-//		@Override
-//		public void validate(String line) throws CsvValidationException {
-//			if (!isValid(line)) {
-//				throw new CsvValidationException("Validator Exception");
-//			}
-//		}
-//	}
-
+	/**
+	 * Validator class
+	 * Performs a basic check on CSV row elements as they are read
+	 */
 	private static class Validator implements RowValidator {
 
 		// from https://www.baeldung.com/java-check-string-number

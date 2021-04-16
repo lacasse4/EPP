@@ -1,4 +1,4 @@
-package main.java;
+package main.java.EPP;
 
 import java.util.ArrayList;
 
@@ -42,10 +42,10 @@ public class Evaluated extends ArrayList<Evaluator> {
 		factor = note / mean;
 	}
 
-	public void compute() {
+	public void compute(boolean minScaleIs1, int maxScale, boolean normalize) {
 		double total = 0.0;
 		for (Evaluator e : this) {
-			e.compute();
+			e.compute(minScaleIs1, maxScale,  normalize);
 			total += e.getScore();
 		}
 		note = total;

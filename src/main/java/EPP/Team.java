@@ -1,4 +1,4 @@
-package main.java;
+package main.java.EPP;
 
 import java.util.ArrayList;
 
@@ -32,11 +32,11 @@ public class Team extends ArrayList<Evaluated> {
 	 * Computes means, notes and factors for all Students
  	 * @return the number of evaluated students in the team
 	 */
-	public int compute() {
+	public int compute(boolean minScaleIs1, int maxScale, boolean normalize) {
 		// compute evaluated students notes
 		double total = 0.0;
 		for (Evaluated e : this) {
-			e.compute();
+			e.compute(minScaleIs1, maxScale, normalize);
 			double note = e.getNote();
 			total += note;
 		}
