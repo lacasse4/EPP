@@ -102,29 +102,35 @@ public class EPPReader {
 		Team team = null;
 		Evaluated studentEvaluated = null;
 		Evaluator studentEvaluator = null;
+		boolean teamAdded;
+		boolean evaluatedAdded;
 		
 		String[] last = new String[NB_FIELDS];
 		Arrays.fill(last, "");
 		
 		for (String[] line : csvData) {
-			
+			teamAdded = false;
+			evaluatedAdded = false;
+
 			// detect team changes
 			if (!last[GROUPE].equals(line[GROUPE])) {
 				last[GROUPE] = line[GROUPE];
 				team = new Team(line[GROUPE]);
 				epp.add(team);
+				teamAdded = true;
 			}
 			
 			// detect student evaluated changes
-			if (!last[NOM].equals(line[NOM]) || !last[PRENOM].equals(line[PRENOM])) {
+			if (teamAdded || !last[NOM].equals(line[NOM]) || !last[PRENOM].equals(line[PRENOM])) {
 				last[NOM] = line[NOM];
 				last[PRENOM] = line[PRENOM];
 				studentEvaluated = new Evaluated(line[NOM], line[PRENOM]);
 				team.add(studentEvaluated);
+				evaluatedAdded = true;
 			}
 			
 			// detect student evaluator changes
-			if (!last[NOM_EV].equals(line[NOM_EV]) || !last[PRENOM_EV].equals(line[PRENOM_EV])) {
+			if (teamAdded || evaluatedAdded || !last[NOM_EV].equals(line[NOM_EV]) || !last[PRENOM_EV].equals(line[PRENOM_EV])) {
 				last[NOM_EV] = line[NOM_EV];
 				last[PRENOM_EV] = line[PRENOM_EV];
 				studentEvaluator = new Evaluator(line[NOM_EV], line[PRENOM_EV]);

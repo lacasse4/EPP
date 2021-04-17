@@ -13,7 +13,7 @@ public class Evaluated extends ArrayList<Evaluator> {
 	private double note;
 	private double factor;
 
-	public Evaluated(String firstName, String lastName) {
+	public Evaluated(String lastName, String firstName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -48,6 +48,6 @@ public class Evaluated extends ArrayList<Evaluator> {
 			e.compute(minScaleIs1, maxScale,  normalize);
 			total += e.getScore();
 		}
-		note = total;
+		note = normalize ? total / size() : total;
 	}
 }

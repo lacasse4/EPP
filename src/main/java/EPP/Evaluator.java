@@ -35,6 +35,6 @@ public class Evaluator extends ArrayList<Double> {
 		for (Double noteAspect : this) {
 			total += noteAspect - offset;
 		}
-		evaluatorScore = total;
+		evaluatorScore = normalize ? total * 100.0 / (maxScale * size()) : total;
 	}
 }

@@ -49,6 +49,7 @@ public class EPP extends AbstractTableModel implements Iterable<Team> {
 	 * Computes means, notes and factors for all Students
 	 */
 	public void compute() {
+		nEvaluated = 0;
 		for (Team t : teamList) {
 			nEvaluated += t.compute(minScaleIs1, maxScale, normalize);
 		}
