@@ -16,22 +16,6 @@ public class EPP extends AbstractTableModel implements Iterable<Team> {
 	private List<Team> teamList;
 	private int nEvaluated = 0;
 
-	private boolean minScaleIs1;
-	private int maxScale;
-	private boolean normalize;
-
-	public void setMinScaleIs1(boolean minScaleIs1) {
-		this.minScaleIs1 = minScaleIs1;
-	}
-
-	public void setMaxScale(int maxScale) {
-		this.maxScale = maxScale;
-	}
-
-	public void setNormalize(boolean normalize) {
-		this.normalize = normalize;
-	}
-
 	public EPP() {
 		teamList = new ArrayList<Team>();
 	}
@@ -48,10 +32,10 @@ public class EPP extends AbstractTableModel implements Iterable<Team> {
 	/**
 	 * Computes means, notes and factors for all Students
 	 */
-	public void compute() {
+	public void compute(int minScale, int maxScale) {
 		nEvaluated = 0;
 		for (Team t : teamList) {
-			nEvaluated += t.compute(minScaleIs1, maxScale, normalize);
+			nEvaluated += t.compute(minScale, maxScale);
 		}
 		createGrouping();
 		fireTableDataChanged();

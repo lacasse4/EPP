@@ -42,12 +42,12 @@ public class Evaluated extends ArrayList<Evaluator> {
 		factor = note / mean;
 	}
 
-	public void compute(boolean minScaleIs1, int maxScale, boolean normalize) {
+	public void compute(int minScale, int maxScale) {
 		double total = 0.0;
 		for (Evaluator e : this) {
-			e.compute(minScaleIs1, maxScale,  normalize);
+			e.compute(minScale, maxScale);
 			total += e.getScore();
 		}
-		note = normalize ? total / size() : total;
+		note = total / size();
 	}
 }

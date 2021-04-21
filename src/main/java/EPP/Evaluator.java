@@ -29,12 +29,12 @@ public class Evaluator extends ArrayList<Double> {
 		return lastName;
 	}
 
-	public void compute(boolean minScaleIs1, int maxScale, boolean normalize) {
+	public void compute(int minScale, int maxScale) {
 		double total = 0.0;
-		double offset = minScaleIs1 ? 0.0 : 1.0;
+		double offset = minScale == 1 ? 0.0 : 1.0;
 		for (Double noteAspect : this) {
 			total += noteAspect - offset;
 		}
-		evaluatorScore = normalize ? total * 100.0 / (maxScale * size()) : total;
+		evaluatorScore =  total * 100.0 / (maxScale * size());
 	}
 }

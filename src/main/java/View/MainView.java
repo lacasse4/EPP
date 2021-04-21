@@ -1,17 +1,16 @@
 package main.java.View;
 
 import java.awt.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 /**
  * MainView class. Main view of the EPP application
  * @author Vincent Lacasse
  */
-public class MainView extends JFrame implements PropertyChangeListener {
+public class MainView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -21,51 +20,47 @@ public class MainView extends JFrame implements PropertyChangeListener {
 	public MainView() {
 		super("Évaluation par les pairs");
 
-		final JPanel contentPane;
-		final JPanel controlPanel;
-		final JPanel paramPanel;
-		final JPanel buttonPanel;
-		final SpringLayout layout;
-		final JScrollPane scrollPane;
+		final JPanel contentPane = new JPanel();
+		final JPanel commandPanel = new JPanel();
+		final JPanel radioButtonPanel = new JPanel();
+		final JPanel comboBoxPanel = new JPanel();
+		final JPanel buttonPanel = new JPanel();
 
-		final JTable table;
+		final JTable table = new JTable();
+		final JScrollPane tableScrollPane = new JScrollPane(table);
 
-		final JCheckBox minScaleCheckBox;
-		final JComboBox<Integer> maxScaleComboBox;
-		final JCheckBox normalizeCheckBox;
-		final JButton readButton;
-		final JButton writeButton;
-		final JButton exitButton;
+		final JRadioButton ELE400RadioButton = new JRadioButton("ELE400");
+		final JRadioButton ELE795RadioButton = new JRadioButton("ELE795");
+		final JRadioButton OtherRadioButton = new JRadioButton("Autre cours");
+		final ButtonGroup radioButtonGroup = new ButtonGroup();
+		final JLabel minScaleLabel = new JLabel("Valeur minimum du barème : ", JLabel.TRAILING);
+		final JComboBox<Integer> minScaleComboBox= new JComboBox<Integer>();
+		final JLabel maxScaleLabel = new JLabel("Valeur maximum du barème : ", JLabel.TRAILING);
+		final JComboBox<Integer> maxScaleComboBox = new JComboBox<Integer>();
+		final JButton readButton = new JButton();
+		final JButton writeButton = new JButton();
+		final JButton exitButton = new JButton();
 
-		final JMenuBar menuBar;
-		final JMenu mnFile;
-		final JMenu mnHelp;
-		final JMenuItem readMenuItem;
-		final JMenuItem writeMenuItem;
-		final JMenuItem exitMenuItem;
-		final JMenuItem aboutMenuItem;
+		final JMenuBar menuBar = new JMenuBar();
+		final JMenu mnFile = new JMenu("Fichier");
+		final JMenu mnHelp = new JMenu("Aide");
+		final JMenuItem readMenuItem = new JMenuItem();
+		final JMenuItem writeMenuItem = new JMenuItem();
+		final JMenuItem exitMenuItem = new JMenuItem();
+		final JMenuItem aboutMenuItem = new JMenuItem();
 
-		final JLabel minScaleLabel;
-		final JLabel maxScaleLabel;
-		final JLabel normalizeLabel;
+		final Mediator mediator = new Mediator(this);
 
 		// Set frame and main panel
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1000, 500);
-		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.add(tableScrollPane, BorderLayout.CENTER);
+		contentPane.add(commandPanel, BorderLayout.SOUTH);
 
-		// create menubar and menuitems
-		menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
-		mnFile = new JMenu("Fichier");
-		mnHelp = new JMenu("Aide");
-		readMenuItem = new JMenuItem();
-		writeMenuItem = new JMenuItem();
-		exitMenuItem = new JMenuItem();
-		aboutMenuItem = new JMenuItem();
+		// Set menu
 		menuBar.add(mnFile);
 		menuBar.add(mnHelp);
 		mnFile.add(readMenuItem);
@@ -73,73 +68,63 @@ public class MainView extends JFrame implements PropertyChangeListener {
 		mnFile.addSeparator();
 		mnFile.add(exitMenuItem);
 		mnHelp.add(aboutMenuItem);
+		setJMenuBar(menuBar);
 
-		// create table
-		table = new JTable();
+		// Set table table
 		table.setGridColor(Color.BLACK);
 		table.setFillsViewportHeight(true);
-		scrollPane = new JScrollPane(table);
-		contentPane.add(scrollPane, BorderLayout.CENTER);
 
-		// create control panel
-		controlPanel = new JPanel();
-		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.PAGE_AXIS));
-		contentPane.add(controlPanel, BorderLayout.SOUTH);
+		// Set command panel
+		commandPanel.setLayout(new BoxLayout(commandPanel, BoxLayout.PAGE_AXIS));
+		commandPanel.add(radioButtonPanel);
+		commandPanel.add(comboBoxPanel);
+		commandPanel.add(buttonPanel);
 
-		// create param panel
-		paramPanel = new JPanel();
-		layout = new SpringLayout();
-		paramPanel.setLayout(layout);
-		controlPanel.add(paramPanel);
-		controlPanel.add(new JSeparator());
+		// Set radio button panel
+		radioButtonGroup.add(ELE400RadioButton);
+		radioButtonGroup.add(ELE795RadioButton);
+		radioButtonGroup.add(OtherRadioButton);
+		radioButtonPanel.add(ELE400RadioButton);
+		radioButtonPanel.add(ELE795RadioButton);
+		radioButtonPanel.add(OtherRadioButton);
+		radioButtonPanel.setBorder(new EtchedBorder());
 
-		minScaleCheckBox = new JCheckBox();
-		maxScaleComboBox = new JComboBox<Integer>();
-		normalizeCheckBox = new JCheckBox();
+		// Set comboBoxPanel panel
+		comboBoxPanel.add(makePanel(minScaleLabel, minScaleComboBox));
+		comboBoxPanel.add(makePanel(maxScaleLabel, maxScaleComboBox));
+		comboBoxPanel.setBorder(new EtchedBorder());
 
-		minScaleLabel = new JLabel("Barème ELE400 (valeur minimum du barème = 1) : ", JLabel.TRAILING);
-		paramPanel.add(minScaleLabel);
-		paramPanel.add(minScaleCheckBox);
-
-		maxScaleLabel = new JLabel("Valeur maximum du barème : ", JLabel.TRAILING);
-		paramPanel.add(maxScaleLabel);
-		JPanel p = new JPanel();
-		p.setLayout(new FlowLayout(FlowLayout.LEADING));
-		p.add(maxScaleComboBox);
-		paramPanel.add(p);
-
-		normalizeLabel = new JLabel("Normaliser les notes sur 100 points : ", JLabel.TRAILING);
-		paramPanel.add(normalizeLabel);
-		paramPanel.add(normalizeCheckBox);
-
-		SpringUtilities.makeCompactGrid(paramPanel, 3, 2, 6, 6, 6, 6);
-
-		// create button panel
-		buttonPanel = new JPanel();
-		controlPanel.add(buttonPanel);
-		readButton = new JButton();
-		writeButton = new JButton();
-		exitButton = new JButton();
+		// Set button panel
 		buttonPanel.add(readButton);
 		buttonPanel.add(writeButton);
 		buttonPanel.add(exitButton);
 
 		// setup Mediator
-		Mediator mediator = new Mediator(this);
 		mediator.registerReadMenuItem(readMenuItem);
 		mediator.registerWriteMenuItem(writeMenuItem);
 		mediator.registerExitMenuItem(exitMenuItem);
 		mediator.registerAboutMenuItem(aboutMenuItem);
 		mediator.registerTable(table);
-		mediator.registerMinScaleCheckBox(minScaleCheckBox);
-		mediator.registerMaxScaleSpinner(maxScaleComboBox);
-		mediator.registerNormalizeCheckBox(normalizeCheckBox);
+		mediator.registerELE400RadioButton(ELE400RadioButton);
+		mediator.registerELE795RadioButton(ELE795RadioButton);
+		mediator.registerOtherRadioButton(OtherRadioButton);
+		mediator.registerMinScaleComboBox(minScaleComboBox);
+		mediator.registerMaxScaleComboBox(maxScaleComboBox);
 		mediator.registerReadButton(readButton);
 		mediator.registerWriteButton(writeButton);
 		mediator.registerExitButton(exitButton);
 	}
 
-	public void propertyChange(PropertyChangeEvent evt) {
-
+	/**
+	 * Makes the component use a reasonable width
+	 * @param c1 - Component for which we want a limited width
+	 * @return JPanel containing the Component
+	 */
+	private JPanel makePanel(Component c1, Component c2) {
+		JPanel p = new JPanel();
+		p.setLayout(new FlowLayout(FlowLayout.LEADING));
+		p.add(c1);
+		p.add(c2);
+		return p;
 	}
 }

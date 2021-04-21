@@ -14,15 +14,16 @@ import java.awt.event.*;
 import java.io.File;
 
 public class Mediator {
-    public static final boolean SCALE_MIN_DEFAULT = false;  // scale starts at 0, ELE795 default
+    public static final int SCALE_MIN_DEFAULT = 0;          // scale starts at 0, ELE795 default
     public static final int SCALE_MAX_DEFAULT = 3;			// max scale startup value, ELE795 default
     public static final int SCALE_MAX_MAX = 10;             // maximum scale available
-    public static final boolean NORMALIZE_DEFAULT = false;  // do not normalize
 
     private JTable table;
-    private JCheckBox minScaleCheckBox;
+    private JRadioButton ELE400RadioButton;
+    private JRadioButton ELE795RadioButton;
+    private JRadioButton OtherRadioButton;
+    private JComboBox<Integer> minScaleComboBox;
     private JComboBox<Integer> maxScaleComboBox;
-    private JCheckBox normalizeCheckBox;
     private JButton readButton;
     private JButton writeButton;
     private JButton exitButton;
@@ -36,9 +37,6 @@ public class Mediator {
     private Action writeAction;
     private Action exitAction;
     private Action aboutAction;
-    private Action minScaleAction;
-    private Action maxScaleAction;
-    private Action normalizeAction;
 
     private EPP epp = null;
 
@@ -49,9 +47,6 @@ public class Mediator {
         writeAction = new WriteAction(parent, fileChooser);
         exitAction = new ExitAction();
         aboutAction = new AboutAction(parent);
-        minScaleAction = new MinScaleAction();
-        maxScaleAction = new MaxScaleAction();
-        normalizeAction = new NormalizeAction();
 
         windowListener = new MainViewListener();
         parent.addWindowListener(windowListener);
@@ -96,21 +91,36 @@ public class Mediator {
         aboutMenuItem.setAction(aboutAction);
     }
 
-    public void registerMinScaleCheckBox(JCheckBox minScaleCheckBox) {
-        this.minScaleCheckBox = minScaleCheckBox;
-        minScaleCheckBox.setAction(minScaleAction);
+    public void registerELE400RadioButton(JRadioButton ELE400RadioButton) {
+        this.ELE400RadioButton = ELE400RadioButton;
+        ELE400RadioButton.addActionListener(l ->computeAndShow());
     }
 
-    public void registerMaxScaleSpinner(JComboBox<Integer> maxScaleComboBox) {
+    public void registerELE795RadioButton(JRadioButton ELE795RadioButton) {
+        this.ELE795RadioButton = ELE795RadioButton;
+        ELE795RadioButton.addActionListener(l ->computeAndShow());
+    }
+
+    public void registerOtherRadioButton(JRadioButton OtherRadioButton) {
+        this.OtherRadioButton = OtherRadioButton;
+        OtherRadioButton.addActionListener(l ->computeAndShow());
+    }
+
+    public void registerMinScaleComboBox(JComboBox<Integer> minScaleComboBox) {
+        this.minScaleComboBox = minScaleComboBox;
+        minScaleComboBox.addActionListener(l ->computeAndShow());
+    }
+
+    public void registerMaxScaleComboBox(JComboBox<Integer> maxScaleComboBox) {
         this.maxScaleComboBox = maxScaleComboBox;
-         maxScaleComboBox.setAction(maxScaleAction);
+         maxScaleComboBox.addActionListener(l ->computeAndShow());
     }
 
-    public void registerNormalizeCheckBox(JCheckBox normalizeCheckBox) {
-        this.normalizeCheckBox = normalizeCheckBox;
-        normalizeCheckBox.setAction(normalizeAction);
-    }
-
+    /**
+     * Must be call when data must be refreshed
+     * - when one of the controls on the MainView has changed
+     * - when a new file is read
+     */
     public void computeAndShow() {
         enforcesRules();
 
@@ -118,10 +128,9 @@ public class Mediator {
         if (epp == null) return;
 
         // perform epp calculations
-        epp.setMinScaleIs1(minScaleCheckBox.isSelected());
-        epp.setMaxScale((int) maxScaleComboBox.getSelectedItem());
-        epp.setNormalize(normalizeCheckBox.isSelected());
-        epp.compute();
+        int minScale = (int) minScaleComboBox.getSelectedItem();
+        int maxScale = (int) maxScaleComboBox.getSelectedItem();
+        epp.compute(minScale, maxScale);
 
         // set JTable grouping in white and gray
         CelRenderer cr = new CelRenderer(epp.getGrouping());
@@ -132,11 +141,34 @@ public class Mediator {
         setColumnWidth();
     }
 
+    /**
+     * Enforces screen mediator rules
+     */
     public void enforcesRules() {
-        maxScaleAction.setEnabled(normalizeCheckBox.isSelected());
+        if (ELE400RadioButton.isSelected()) {
+            minScaleComboBox.setSelectedItem(1);
+            minScaleComboBox.setEnabled(false);
+            maxScaleComboBox.setSelectedItem(5);
+            maxScaleComboBox.setEnabled(false);
+        }
+        else if (ELE795RadioButton.isSelected()) {
+            minScaleComboBox.setSelectedItem(0);
+            minScaleComboBox.setEnabled(false);
+            maxScaleComboBox.setSelectedItem(3);
+            maxScaleComboBox.setEnabled(false);
+        }
+        else {
+            // OtherRadioButton is selected
+            minScaleComboBox.setEnabled(true);
+            maxScaleComboBox.setEnabled(true);
+        }
+
         writeAction.setEnabled(epp != null);
     }
 
+    /**
+     * Sets Table column width at startup
+     */
     public void setColumnWidth() {
         int[] width = { 300, 200, 200, 100, 100, 100 };
         TableColumn column;
@@ -146,30 +178,42 @@ public class Mediator {
         }
     }
 
-
+    /**
+     * Provides initialisation upon display of the MainView
+     */
     private class MainViewListener extends WindowAdapter {
         @Override
         public void  windowOpened(WindowEvent e) {
-            minScaleAction.setEnabled(true);
-            minScaleCheckBox.setSelected(SCALE_MIN_DEFAULT);
+            ELE400RadioButton.setSelected(false);
+            ELE795RadioButton.setSelected(true);
+            OtherRadioButton.setSelected(false);
 
-            fillComboBox();
+            fillMinScaleComboBox();
+            minScaleComboBox.setSelectedItem(SCALE_MIN_DEFAULT);
+            minScaleComboBox.setEditable(false);
+            minScaleComboBox.setEnabled(false);
+
+            fillMaxScaleComboBox();
             maxScaleComboBox.setSelectedItem(SCALE_MAX_DEFAULT);
             maxScaleComboBox.setEditable(false);
-
-            normalizeAction.setEnabled(true);
-            normalizeCheckBox.setSelected(NORMALIZE_DEFAULT);
+            maxScaleComboBox.setEnabled(false);
 
             writeAction.setEnabled(false);
         }
 
-        private void fillComboBox() {
-            int startIndex = (minScaleCheckBox.isSelected() ? 1 : 0) + 1;
+        private void fillMaxScaleComboBox() {
+            int startIndex = (int)minScaleComboBox.getSelectedItem() + 1;
             int endIndex = SCALE_MAX_MAX;
             for (int i = startIndex; i <= endIndex; i++) {
                 maxScaleComboBox.addItem(i);
             }
         }
+
+        private void fillMinScaleComboBox() {
+            minScaleComboBox.addItem(0);
+            minScaleComboBox.addItem(1);
+        }
+
     }
 
     /**
@@ -292,59 +336,7 @@ public class Mediator {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(parent, "EPP version 1.2\nAuteur: Vincent Lacasse");
+            JOptionPane.showMessageDialog(parent, "EPP version 1.3\nAuteur: Vincent Lacasse");
         }
     }
-
-    /**
-     * Command class when min scale changes
-     */
-    public class MinScaleAction extends AbstractAction {
-        private static final long serialVersionUID = 1L;
-
-        public MinScaleAction() {
-            super();
-//            super("Barème ELE400 (valeur minimum du barème = 1)");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            computeAndShow();
-        }
-    }
-
-    /**
-     * Command class when max scale changes
-     */
-    public class MaxScaleAction extends AbstractAction {
-        private static final long serialVersionUID = 1L;
-
-        public MaxScaleAction() {
-            super();
-//            super("Valeur maximum du barème");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            computeAndShow();
-        }
-    }
-
-    /**
-     * Command class when normalization has changed
-     */
-    public class NormalizeAction extends AbstractAction {
-        private static final long serialVersionUID = 1L;
-
-        public NormalizeAction() {
-            super();
-//            super("Normaliser les notes sur 100 points");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            computeAndShow();
-        }
-    }
-
 }
