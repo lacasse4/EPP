@@ -336,7 +336,7 @@ public class Mediator {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(parent, "EPP version 1.3\nAuteur: Vincent Lacasse");
+            JOptionPane.showMessageDialog(parent, "EPP version 1.3.1\nAuteur: Vincent Lacasse");
         }
     }
 }
