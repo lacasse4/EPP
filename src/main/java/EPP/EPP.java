@@ -81,7 +81,7 @@ public class EPP extends AbstractTableModel implements Iterable<Team> {
 	 */
 	@Override
 	public int getColumnCount() {
-		return Team.NB_FIELDS;
+		return Team.NB_FIELDS_DISPLAYED;
 	}
 
 	/**
@@ -99,13 +99,13 @@ public class EPP extends AbstractTableModel implements Iterable<Team> {
 				int studentIndex = t.size() + rowIndex - teamIndex;
 
 				switch(columnIndex) {
-					case Team.GROUPE: return t.getName();
-					case Team.NOM: return t.get(studentIndex).getLastName();
-					case Team.PRENOM: return t.get(studentIndex).getFirstName();
-					case Team.NOTE_EPP: return t.get(studentIndex).getNote();
-					case Team.MNG: return t.getMean();
-					case Team.FACTEUR: return t.get(studentIndex).getFactor();
-					default: throw new IndexOutOfBoundsException();
+					case Team.D_GROUPE:   return t.getName();
+					case Team.D_NOM:      return t.get(studentIndex).getLastName();
+					case Team.D_PRENOM:   return t.get(studentIndex).getFirstName();
+					case Team.D_NOTE_EPP: return t.get(studentIndex).getNote();
+					case Team.D_MNG:      return t.getMean();
+					case Team.D_FACTEUR:  return t.get(studentIndex).getFactor();
+					default:            throw new IndexOutOfBoundsException();
 				}
 			}
 		}
@@ -126,7 +126,7 @@ public class EPP extends AbstractTableModel implements Iterable<Team> {
 	 * @return the header
 	 */
 	public String[] getHeader() {
-		return Team.HEADER;
+		return Team.S_HEADER;
 	}
 
 	/**
@@ -136,6 +136,6 @@ public class EPP extends AbstractTableModel implements Iterable<Team> {
 	 */
 	@Override
 	public String getColumnName(int column) {
-		return Team.HEADER[column];
+		return Team.D_HEADER[column];
 	}
 }

@@ -8,18 +8,30 @@ import java.util.ArrayList;
  */
 public class Team extends ArrayList<Evaluated> {
 
-	public static final int NB_FIELDS = 6;
-	public static final int GROUPE = 0;
-	public static final int NOM = 1;
-	public static final int PRENOM = 2;
-	public static final int NOTE_EPP = 3;
-	public static final int MNG = 4;
-	public static final int FACTEUR = 5;
-	public static final int NOTE_EQUIPE = 6;
-	public static final int NOTE_ETUDIANT = 7;
-	public static final String[] HEADER =
-//			{"Groupe", "Nom", "Prenom", "Note_EPP", "MNG", "Facteur"};
-			{"Groupe", "Nom", "Prenom", "Note_EPP", "MNG", "Facteur", "Note_equipe", "Note_etudiant"};
+	public static final int NB_FIELDS_DISPLAYED = 6;
+	public static final int D_GROUPE = 0;
+	public static final int D_NOM = 1;
+	public static final int D_PRENOM = 2;
+	public static final int D_NOTE_EPP = 3;
+	public static final int D_MNG = 4;
+	public static final int D_FACTEUR = 5;
+
+	public static final int NB_FIELDS_SAVED = 9;
+	public static final int S_GROUPE = 0;
+	public static final int S_NOM = 1;
+	public static final int S_PRENOM = 2;
+	public static final int S_COURRIEL = 3;
+	public static final int S_NOTE_EPP = 4;
+	public static final int S_MNG = 5;
+	public static final int S_FACTEUR = 6;
+	public static final int S_NOTE_EQUIPE = 7;
+	public static final int S_NOTE_ETUDIANT = 8;
+
+	public static final String[] D_HEADER =
+			{"Groupe", "Nom", "Prenom", "Note_EPP", "MNG", "Facteur"};
+
+	public static final String[] S_HEADER =
+			{"Groupe", "Nom", "Prenom", "Courriel", "Note_EPP", "MNG", "Facteur", "Note_equipe", "Note_etudiant"};
 
 	private String name;
 	private double mean;

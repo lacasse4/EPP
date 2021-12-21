@@ -28,19 +28,22 @@ import javax.swing.*;
  */
 public class EPPReader {
 	
-	public static final int NB_FIELDS = 12;
+	public static final int NB_FIELDS = 15;
 	public static final int GROUPE = 0;
 	public static final int NOM = 1; 
 	public static final int PRENOM = 2;
-	public static final int BAREME = 3;
-	public static final int NOTE_ASPECT = 4;
-	public static final int NOTE = 5;
-	public static final int MNG = 6;
-	public static final int FACTEUR = 7;
-	public static final int COMMENTAIRES = 8;
-	public static final int NOM_EV = 9;
-	public static final int PRENOM_EV = 10;
-	public static final int COMMENTAIRES_GENERAUX = 11;
+	public static final int COURRIEL = 3;
+	public static final int BAREME = 4;
+	public static final int NOTE_ASPECT = 5;
+	public static final int NOTE_CALCULE = 6;
+	public static final int NOTE_MODIFIE = 7;
+	public static final int NOTE_FINALE =8;
+	public static final int MNG = 9;
+	public static final int FACTEUR = 10;
+	public static final int COMMENTAIRES = 11;
+	public static final int NOM_EV = 12;
+	public static final int PRENOM_EV = 13;
+	public static final int COMMENTAIRES_GENERAUX = 14;
 
 	/**
 	 * reads a CSV file (Export des evaluations, sans multiligne) and create an EPP structure
@@ -70,7 +73,7 @@ public class EPPReader {
 			CSVReader reader = new CSVReaderBuilder(
 					new FileReader(CSVFileName))
 					.withCSVParser(csvParser)   
-					.withSkipLines(1)           // skip the first line, header info
+					.withSkipLines(1)           // skip the first line which contains header info
 					.withRowValidator(rv)
 					.build();
 			csvData = reader.readAll();
@@ -124,7 +127,7 @@ public class EPPReader {
 			if (teamAdded || !last[NOM].equals(line[NOM]) || !last[PRENOM].equals(line[PRENOM])) {
 				last[NOM] = line[NOM];
 				last[PRENOM] = line[PRENOM];
-				studentEvaluated = new Evaluated(line[NOM], line[PRENOM]);
+				studentEvaluated = new Evaluated(line[NOM], line[PRENOM], line[COURRIEL]);
 				team.add(studentEvaluated);
 				evaluatedAdded = true;
 			}
@@ -137,7 +140,14 @@ public class EPPReader {
 				studentEvaluated.add(studentEvaluator);
 			}
 
-			studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]));
+			// use the overridden note as the aspect score if the overridden note is not 0
+			// otherwise use aspect score as is.
+			if (Integer.parseInt(line[NOTE_MODIFIE]) > 0) {
+				studentEvaluated.setModifiedNote(Double.parseDouble(line[NOTE_MODIFIE]));
+			}
+			else {
+				studentEvaluator.add(Double.parseDouble(line[NOTE_ASPECT]));
+			}
 		}
 		
 		return epp;
@@ -150,13 +160,15 @@ public class EPPReader {
 	private static class Validator implements RowValidator {
 
 		// from https://www.baeldung.com/java-check-string-number
-		final private Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+		final private Pattern pattern1 = Pattern.compile("-?\\d+(\\,\\d+)?");
+		final private Pattern pattern2 = Pattern.compile("-?\\d+(\\.\\d+)?");
 
 		public boolean isNumeric(String strNum) {
 			if (strNum == null) {
 				return false;
 			}
-			return pattern.matcher(strNum).matches();
+			return pattern1.matcher(strNum).matches()
+				|| pattern2.matcher(strNum).matches();
 		}
 
 		@Override
@@ -165,9 +177,12 @@ public class EPPReader {
 			row[GROUPE].length() != 0 &&
 			row[NOM].length() !=0 &&
 			row[PRENOM].length() != 0 &&
+			row[COURRIEL].length() != 0 &&
 			row[BAREME].length() !=0 &&
 			isNumeric(row[NOTE_ASPECT]) &&
-			isNumeric(row[NOTE]) &&
+			isNumeric(row[NOTE_CALCULE]) &&
+			isNumeric(row[NOTE_MODIFIE]) &&
+			isNumeric(row[NOTE_FINALE]) &&
 			isNumeric(row[MNG]) &&
 			isNumeric(row[FACTEUR]) &&
 			row[NOM_EV].length() != 0 &&

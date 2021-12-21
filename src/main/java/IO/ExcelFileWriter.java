@@ -42,36 +42,39 @@ public class ExcelFileWriter {
 
 			int firstRow = rowCount;
 			int lastRow = rowCount + team.size() - 1;
-			int firstCol = Team.NOTE_EQUIPE;
-			int lastCol = Team.NOTE_EQUIPE;
+			int firstCol = Team.S_NOTE_EQUIPE;
+			int lastCol = Team.S_NOTE_EQUIPE;
 			cra = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
 			sheet.addMergedRegion(cra);
 
 			for (Evaluated e : team) {
 				row = sheet.createRow(rowCount);
 
-				cell = row.createCell(Team.GROUPE);
+				cell = row.createCell(Team.S_GROUPE);
 				cell.setCellValue(team.getName());
 
-				cell = row.createCell(Team.NOM);
+				cell = row.createCell(Team.S_NOM);
 				cell.setCellValue(e.getLastName());
 
-				cell = row.createCell(Team.PRENOM);
+				cell = row.createCell(Team.S_PRENOM);
 				cell.setCellValue(e.getFirstName());
 
-				cell = row.createCell(Team.NOTE_EPP);
+				cell = row.createCell(Team.S_COURRIEL);
+				cell.setCellValue(e.getEMail());
+
+				cell = row.createCell(Team.S_NOTE_EPP);
 				cell.setCellValue(e.getNote());
 				cell.setCellStyle(style);
 
-				cell = row.createCell(Team.MNG);
+				cell = row.createCell(Team.S_MNG);
 				cell.setCellValue(team.getMean());
 				cell.setCellStyle(style);
 
-				cell = row.createCell(Team.FACTEUR);
+				cell = row.createCell(Team.S_FACTEUR);
 				cell.setCellValue(e.getFactor());
 				cell.setCellStyle(style);
 
-				cell = row.createCell(Team.NOTE_ETUDIANT);
+				cell = row.createCell(Team.S_NOTE_ETUDIANT);
 				cell.setCellFormula(getFormula(firstRow, rowCount));
 				cell.setCellStyle(style);
 
@@ -95,6 +98,6 @@ public class ExcelFileWriter {
 	}
 
 	private static String getFormula(int firstRow, int rowCount) {
-		return "F" + (rowCount+1) + "*G" + (firstRow+1);
+		return "G" + (rowCount+1) + "*H" + (firstRow+1);
 	}
 }

@@ -172,7 +172,7 @@ public class Mediator {
     public void setColumnWidth() {
         int[] width = { 300, 200, 200, 100, 100, 100 };
         TableColumn column;
-        for (int i = 0; i < Team.NB_FIELDS; i++) {
+        for (int i = 0; i < width.length; i++) {
             column = table.getColumnModel().getColumn(i);
             column.setPreferredWidth(width[i]);
         }
@@ -336,7 +336,7 @@ public class Mediator {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(parent, "EPP version 1.3.1\nAuteur: Vincent Lacasse");
+            JOptionPane.showMessageDialog(parent, "EPP version 1.4.0\nAuteur: Vincent Lacasse");
         }
     }
 }
